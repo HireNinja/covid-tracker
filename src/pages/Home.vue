@@ -11,9 +11,7 @@
               <el-col :span="12">
                  <chart></chart> 
               </el-col>
-          </el-row>
-
-            
+          </el-row>            
       </div>
   </div>
 </template>
@@ -30,7 +28,6 @@ export default {
     },
     data: () => ({
         map: null,
-        location: "Islamabad, Pakistan",
         options: {
             zoomControl: true,
             mapTypeControl: true,
@@ -50,22 +47,27 @@ export default {
         
     },
     async mounted() {
-       try {
-        const google = await gmapsInit();
-        const geocoder = new google.maps.Geocoder();
-        const map = new google.maps.Map(this.$refs['map'],{
-            zoom: 6,
-            options: this.options
-        });
+        try {
+            const google = await gmapsInit();
+            const geocoder = new google.maps.Geocoder();
+            const map = new google.maps.Map(this.$refs['map'],{
+                zoom: 6,
+                options: this.options
+            });
+            geocoder.geocode({ address: this.$location.long_name }, (results, status) => {
+                if (status !== 'OK' || !results[0]) {
+                throw new Error(status);
+                }
+                //console.log(this.$location.position);
+                //console.log(results[0].geometry.location);
+                // console.log(results[0].geometry.viewport);
+                // console.log(this.$location.viewport);
 
-        geocoder.geocode({ address: this.location }, (results, status) => {
-            if (status !== 'OK' || !results[0]) {
-            throw new Error(status);
-            }
-
-            map.setCenter(results[0].geometry.location);
-            map.fitBounds(results[0].geometry.viewport);
-        });
+                var lat = this.$location.position[0];
+                var lng = this.$location.position[1];
+                map.setCenter({lng: lng, lat: lat});
+                map.fitBounds(results[0].geometry.viewport);
+            });
         } catch (error) {
             console.error(error);
         }

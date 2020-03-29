@@ -1,20 +1,16 @@
 <template>
   <div id="app">
-
-    <el-menu :default-active="activeIndex" mode="horizontal" :router="true">
-      <el-menu-item class='m-r'>CovidTracker</el-menu-item>
-      <el-menu-item index="/">Home</el-menu-item>
-      <el-menu-item index="news">News</el-menu-item>
-      <el-menu-item index="discussions">Discussions</el-menu-item>
-    </el-menu>
+    <nav-bar></nav-bar>
     <router-view />
   </div>
 </template>
 
 <script>
+import NavBar from './components/NavBar';
 
 export default {
   components: {
+    NavBar
   },
   data() {
     return {
@@ -34,6 +30,7 @@ body {
 #app {
   width: 1240px;
   margin: auto;
+  margin-top: 7rem;
   .el-menu {
     .m-r{
       margin-right: 5rem;
