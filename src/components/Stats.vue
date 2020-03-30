@@ -5,8 +5,7 @@
                 <div class='stat'>
                     <label>Confirmed Cases in Pakistan</label>
                     <div class='number'>
-                        1,203
-                        <span class='mark red'> <i class="el-icon-top"></i>4%</span>
+                        {{tracker.total_confirmed}}
                     </div>
                 </div>
             </el-col>
@@ -16,8 +15,8 @@
                         <div class='stat'>
                             <label>In Last 24 hours</label>
                             <div class='number'>
-                                334
-                                <span class='mark red'> <i class="el-icon-top"></i>10%</span>
+                                {{tracker.new_confirmed}}
+                                <span class='mark red'> <i class="el-icon-top"></i>{{tracker.new_confirmed_growth}}%</span>
                             </div>
                         </div>
                     </el-col>
@@ -25,8 +24,7 @@
                         <div class='stat'>
                             <label>Active Cases</label>
                             <div class='number'>
-                                1,149
-                                <span class='mark red'> <i class="el-icon-top"></i>4%</span>
+                                {{tracker.total_confirmed - tracker.total_deaths - tracker.total_recovered}}
                             </div>
                         </div>
                     </el-col>
@@ -34,8 +32,8 @@
                         <div class='stat'>
                             <label>Total Recoveries</label>
                             <div class='number'>
-                                110
-                                <span class='mark green'> <i class="el-icon-top"></i>2.5%</span>
+                                {{tracker.total_recovered}}
+                                <span class='mark green'> <i class="el-icon-top"></i>{{tracker.new_recovered_growth}}%</span>
                             </div>
                         </div>
                     </el-col>
@@ -43,8 +41,8 @@
                         <div class='stat'>
                             <label>Total Deaths</label>
                             <div class='number'>
-                                9
-                                <span class='mark'>%0</span>
+                                
+                                <span class='mark'>{{tracker.new_deaths_growth}}%</span>
                             </div>
                         </div>
                     </el-col>
@@ -55,6 +53,11 @@
         </el-row>
     </div>
 </template>
+<script>
+export default {
+    props: ['tracker']
+}
+</script>
 
 <style lang='scss' scoped>
 #stats {

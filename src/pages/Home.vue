@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-      <stats></stats>
+      <stats :tracker="tracker"></stats>
       <div id='map' ref='map'></div>
 
       <div class='charts'>
@@ -20,6 +20,7 @@
 import gmapsInit from '../services/gmap';
 import Stats from '../components/Stats';
 import Chart from '../components/Chart';
+import Home from '../services/home';
 
 export default {
     components: {
@@ -27,7 +28,10 @@ export default {
         Chart
     },
     data: () => ({
+        tracker: [],
+        cases: [],
         map: null,
+        google: null,
         options: {
             zoomControl: true,
             mapTypeControl: true,
@@ -44,30 +48,44 @@ export default {
         ]
     }),
     methods: {
-        
+        refreshHome: function () {
+            var home = new Home(); 
+            home.getList({location: this.$location.uuid}).then(response => {
+                this.tracker = response.tracker;
+                this.cases = response.cases; 
+                this.renderCases();
+            })
+        },
+        renderCases: function() {
+            
+
+            this.cases.map((loc) => {
+                console.log(Math.sqrt(loc.total_confirmed) * 1000);
+                return new this.google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 1,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                    map: this.map,
+                    center: {lat: loc.position[0], lng: loc.position[1]},
+                    title: loc.total_confirmed.toString(),
+                    radius: loc.total_confirmed * 200
+                })
+            });
+        }
     },
     async mounted() {
         try {
-            const google = await gmapsInit();
-            const geocoder = new google.maps.Geocoder();
-            const map = new google.maps.Map(this.$refs['map'],{
-                zoom: 6,
-                options: this.options
+            this.google = await gmapsInit();
+            // const geocoder = new this.google.maps.Geocoder();
+            this.map = new this.google.maps.Map(this.$refs['map'],{
+                zoom: 5,
+                options: this.options,
+                center: {lat: this.$location.position[0], lng: this.$location.position[1]}
             });
-            geocoder.geocode({ address: this.$location.long_name }, (results, status) => {
-                if (status !== 'OK' || !results[0]) {
-                throw new Error(status);
-                }
-                //console.log(this.$location.position);
-                //console.log(results[0].geometry.location);
-                // console.log(results[0].geometry.viewport);
-                // console.log(this.$location.viewport);
-
-                var lat = this.$location.position[0];
-                var lng = this.$location.position[1];
-                map.setCenter({lng: lng, lat: lat});
-                map.fitBounds(results[0].geometry.viewport);
-            });
+            this.refreshHome();
+            // this.map.fitBounds(this.$location.viewport);
         } catch (error) {
             console.error(error);
         }
